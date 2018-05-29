@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ public class GraphView : MonoBehaviour
             Debug.LogWarning("GraphView No graph to initialize!");
             return;
         }
-        nodeViews = new NodeView[graph.Width,graph.Height];
+        nodeViews = new NodeView[graph.Width, graph.Height];
 
         foreach (var n in graph.nodes)
         {
@@ -45,16 +46,60 @@ public class GraphView : MonoBehaviour
     }
 
 
-    public void ColorNodes(List<Node> nodes,Color color)
+    public void ColorNodes(List<Node> nodes, Color color)
     {
         foreach (var n in nodes)
         {
-            if (n!=null)
+            if (n != null)
             {
-                NodeView nodeView = nodeViews[n.xIndex,n.yIndex];
+                NodeView nodeView = nodeViews[n.xIndex, n.yIndex];
                 nodeView.ColorNode(color);
             }
         }
     }
 
+    internal void ColorNodes(Queue<Node> nodes, Color color)
+    {
+        foreach (var n in nodes)
+        {
+            if (n != null)
+            {
+                NodeView nodeView = nodeViews[n.xIndex, n.yIndex];
+                nodeView.ColorNode(color);
+            }
+        }
+    }
+
+
+    public void ShowNodeArrows(Node node, Color color)
+    {
+        if (node != null)
+        {
+            NodeView nodeView = nodeViews[node.xIndex, node.yIndex];
+            if (nodeView != null)
+            {
+                nodeView.ShowArrow(color);
+            }
+        }
+    }
+
+
+    public void ShowNodeArrows(List<Node> nodes,Color color)
+    {
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            ShowNodeArrows(nodes[i],color);
+        }
+    }
+
+    public void ShowNodeArrows(Queue<Node> nodes,Color color)
+    {
+        foreach (var n in nodes)
+        {
+            if (n != null)
+            {
+                ShowNodeArrows(n,color);
+            }
+        }
+    }
 }

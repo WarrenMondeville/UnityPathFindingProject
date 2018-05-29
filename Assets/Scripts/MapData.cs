@@ -20,7 +20,6 @@ public class MapData : MonoBehaviour
         {
             var levelName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name+"Texture";
             var path = System.IO.Path.Combine(resourcePath, levelName);
-            var obj = Resources.Load<Texture2D>(path);
             textureMap = Resources.Load<Texture2D>(path);
         }
 
@@ -31,7 +30,7 @@ public class MapData : MonoBehaviour
         }
 
 
-        int[,] mapInstance = MakeMap();
+        //int[,] mapInstance = MakeMap();
     }
 
     public List<string> GetMapFromTextFile(TextAsset tAsset)

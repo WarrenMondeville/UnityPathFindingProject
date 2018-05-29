@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Graph : MonoBehaviour
 {
-
+    public bool perpendicular = true;
     public Node[,] nodes;
     public List<Node> walls = new List<Node>();
 
@@ -27,6 +27,12 @@ public class Graph : MonoBehaviour
 
     };
 
+    public static readonly Vector2[] perPendicularDir = {
+        new Vector2(0,1),
+        new Vector2(1,0),
+        new Vector2(0,-1),
+        new Vector2(-1,0),
+    };
 
     public void Init(int[,] mapData)
     {
@@ -56,10 +62,10 @@ public class Graph : MonoBehaviour
         {
             for (int x = 0; x < m_width; x++)
             {
-              
-                if (nodes[x,y].nodeType != NodeType.Blocked)
+
+                if (nodes[x, y].nodeType != NodeType.Blocked)
                 {
-                    nodes[x, y].neighbors = GetNeighbors(x,y );
+                    nodes[x, y].neighbors = GetNeighbors(x, y);
                 }
             }
         }
@@ -81,7 +87,7 @@ public class Graph : MonoBehaviour
             if (IsWithinBounds(newX, newY) && nodeArray != null &&
                 nodeArray[newX, newY].nodeType != NodeType.Blocked)
             {
-                neighborNodes.Add(nodeArray[newX,newY]);
+                neighborNodes.Add(nodeArray[newX, newY]);
             }
         }
         return neighborNodes;
@@ -91,7 +97,20 @@ public class Graph : MonoBehaviour
 
     List<Node> GetNeighbors(int x, int y)
     {
-        return GetNeighbors(x, y, nodes, allDirections);
+        return GetNeighbors(x, y, nodes, perpendicular ? perPendicularDir : allDirections);
     }
-    
+
+    public float GetNodeDistance(Node source, Node target)
+    {
+        int dx = Mathf.Abs(source.xIndex - target.xIndex);
+        int dy = Mathf.Abs(source.yIndex - target.yIndex);
+
+        int min = Mathf.Min(dx, dy);
+        int max = Mathf.Max(dx, dy);
+
+        int diagonalSteps = min;
+        int straightSetps = max - min;
+        return (1.4f * diagonalSteps + straightSetps);
+    }
+
 }

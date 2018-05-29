@@ -19,6 +19,9 @@ public class Node
 
     public List<Node> neighbors = new List<Node>();
 
+    // total distance traveled from the start Node
+    public float distanceTraveled = Mathf.Infinity;
+
     public Node previous = null;
 
     public Node(int xIndex, int yIndex, NodeType nodeType)
