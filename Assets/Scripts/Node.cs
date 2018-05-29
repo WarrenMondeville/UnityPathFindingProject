@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ public enum NodeType
     Blocked = 1
 }
 
-public class Node
+public class Node : IComparable<Node>
 {
     public NodeType nodeType = NodeType.Open;
 
@@ -24,11 +25,19 @@ public class Node
 
     public Node previous = null;
 
+    public int priority;
     public Node(int xIndex, int yIndex, NodeType nodeType)
     {
         this.xIndex = xIndex;
         this.yIndex = yIndex;
         this.nodeType = nodeType;
+    }
+
+    public int CompareTo(Node other)
+    {
+        if (this.priority < other.priority) return -1;
+        if (this.priority > other.priority) return 1;
+        return 0; 
     }
 
     public void Reset()

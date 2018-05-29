@@ -12,7 +12,7 @@ public class PathFinder : MonoBehaviour
     Graph m_graph;
     GraphView m_graphView;
 
-    Queue<Node> m_frontierNodes;
+    PriorityQueue<Node> m_frontierNodes;
     List<Node> m_exploreNodes;
     List<Node> m_pathNodes;
 
@@ -61,7 +61,7 @@ public class PathFinder : MonoBehaviour
         m_goalNode = goal;
         ShowColors(graphView, start, goal);
 
-        m_frontierNodes = new Queue<Node>();
+        m_frontierNodes = new PriorityQueue<Node>();
         m_frontierNodes.Enqueue(start);
         m_exploreNodes = new List<Node>();
         m_pathNodes = new List<Node>();
@@ -94,7 +94,7 @@ public class PathFinder : MonoBehaviour
 
         if (m_frontierNodes != null)
         {
-            graphView.ColorNodes(m_frontierNodes, frontierColor);
+            graphView.ColorNodes(m_frontierNodes.ToList(), frontierColor);
         }
 
         if (m_exploreNodes != null)
@@ -185,7 +185,7 @@ public class PathFinder : MonoBehaviour
 
         if (m_graphView != null && showArrows)
         {
-            m_graphView.ShowNodeArrows(m_frontierNodes, arrowColor);
+            m_graphView.ShowNodeArrows(m_frontierNodes.ToList(), arrowColor);
 
         }
     }
@@ -203,6 +203,8 @@ public class PathFinder : MonoBehaviour
                     node.neighbors[i].distanceTraveled = newDistanceTraveled;
 
                     node.neighbors[i].previous = node;
+                    // node.neighbors[i].priority = (int)node.neighbors[i].distanceTraveled;
+                    node.neighbors[i].priority = m_exploreNodes.Count;
                     m_frontierNodes.Enqueue(node.neighbors[i]);
                 }
             }
@@ -228,6 +230,7 @@ public class PathFinder : MonoBehaviour
                     }
                     if (!m_frontierNodes.Contains(node.neighbors[i]))
                     {
+                        node.neighbors[i].priority = (int)node.neighbors[i].distanceTraveled;
                         m_frontierNodes.Enqueue(node.neighbors[i]);
                     }
                 }

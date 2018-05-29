@@ -8,7 +8,6 @@ public class Graph : MonoBehaviour
     public Node[,] nodes;
     public List<Node> walls = new List<Node>();
 
-    int[,] m_mapData;
     int m_width;
     int m_height;
     public int Width { get { return this.m_width; } }
@@ -36,7 +35,6 @@ public class Graph : MonoBehaviour
 
     public void Init(int[,] mapData)
     {
-        m_mapData = mapData;
         m_width = mapData.GetLength(0);
         m_height = mapData.GetLength(1);
 
