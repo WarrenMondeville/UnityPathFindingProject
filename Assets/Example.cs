@@ -6,8 +6,15 @@ public class Example : MonoBehaviour {
 
     private void Start()
     {
-
-        Test();
+        PriorityQueue<Node> queue = new PriorityQueue<Node>();
+        queue.Enqueue(new Node(1.3f));
+        queue.Enqueue(new Node(1.1f));
+        queue.Enqueue(new Node(1.2f));
+        queue.Enqueue(new Node(1.1f));
+        queue.Enqueue(new Node(1.0f));
+        queue.Enqueue(new Node(1.1f));
+        queue.Enqueue(new Node(1.4f));
+        //    Test();
     }
 
     void Test()

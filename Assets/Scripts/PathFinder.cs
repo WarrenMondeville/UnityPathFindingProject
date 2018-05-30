@@ -203,8 +203,8 @@ public class PathFinder : MonoBehaviour
                     node.neighbors[i].distanceTraveled = newDistanceTraveled;
 
                     node.neighbors[i].previous = node;
-                    // node.neighbors[i].priority = (int)node.neighbors[i].distanceTraveled;
-                    node.neighbors[i].priority = m_exploreNodes.Count;
+                     node.neighbors[i].priority = (int)node.neighbors[i].distanceTraveled;
+                    //node.neighbors[i].priority = m_exploreNodes.Count;
                     m_frontierNodes.Enqueue(node.neighbors[i]);
                 }
             }
@@ -230,7 +230,7 @@ public class PathFinder : MonoBehaviour
                     }
                     if (!m_frontierNodes.Contains(node.neighbors[i]))
                     {
-                        node.neighbors[i].priority = (int)node.neighbors[i].distanceTraveled;
+                        node.neighbors[i].priority = node.neighbors[i].distanceTraveled;
                         m_frontierNodes.Enqueue(node.neighbors[i]);
                     }
                 }

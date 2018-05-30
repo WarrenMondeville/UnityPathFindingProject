@@ -339,7 +339,7 @@ MonoBehaviour:
   width: 10
   height: 5
   textMap: {fileID: 0}
-  textureMap: {fileID: 2800000, guid: 321c8a4fcd787e74896d20f412aa0dd6, type: 3}
+  textureMap: {fileID: 2800000, guid: c93e303e35e4fca4899c094446db6e2f, type: 3}
   resourcePath: MapData
 --- !u!4 &150524390
 Transform:
@@ -385,9 +385,9 @@ MonoBehaviour:
   graph: {fileID: 1281347729}
   pathFinder: {fileID: 1846201596}
   startX: 0
-  startY: 30
-  goalX: 40
-  goalY: 20
+  startY: 0
+  goalX: 30
+  goalY: 15
   timeStep: 0.001
 --- !u!4 &1247694876
 Transform:
