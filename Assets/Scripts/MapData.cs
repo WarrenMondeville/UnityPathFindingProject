@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 
 public class MapData : MonoBehaviour
 {
@@ -13,7 +14,17 @@ public class MapData : MonoBehaviour
     public Texture2D textureMap;
     public string resourcePath = "MapData";
 
+    public Color32 openColor=Color.white;
+    public Color32 blockedColor = Color.black;
+    public Color32 lightTerrainColor = new Color32(124,194,78,255);
+    public Color32 mediumTerrainColor = new Color32(252,255,52,255);
+    public Color32 heavyTerrainColor = new Color32(255,129,12,255);
 
+    static Dictionary<Color32, NodeType> terrainLookupTable = new Dictionary<Color32, NodeType>();
+    private void Awake()
+    {
+        SetupLookupTable();
+    }
     private void Start()
     {
         if (textureMap == null)
@@ -66,33 +77,46 @@ public class MapData : MonoBehaviour
 
     }
 
-    public List<string> GetMapFromTexture2D(Texture2D Texture2D)
+    public List<string> GetMapFromTexture2D(Texture2D texture)
     {
         List<string> lines = new List<string>();
 
-        if (Texture2D != null)
+        if (texture != null)
         {
-
-        }
-        for (int y = 0; y < Texture2D.height; y++)
-        {
-            string newLine = "";
-            for (int x = 0; x < Texture2D.width; x++)
+            for (int y = 0; y < texture.height; y++)
             {
-                if (Texture2D.GetPixel(x, y) == Color.black)
+                string newLine = "";
+                for (int x = 0; x < texture.width; x++)
                 {
-                    newLine += '1';
+                    Color pixelColor = texture.GetPixel(x,y);
+                    if (terrainLookupTable.ContainsKey(pixelColor))
+                    {
+                        NodeType nodeType = terrainLookupTable[pixelColor];
+                        int nodeTypeNum = (int)nodeType;
+                        newLine += nodeTypeNum;
+                    }
+                    else {
+                        newLine += '0';
+                    }
+
+                 
+                    //if (texture.GetPixel(x, y) == Color.black)
+                    //{
+                    //    newLine += '1';
+                    //}
+                    //else if (texture.GetPixel(x, y) == Color.white)
+                    //{
+                    //    newLine += '0';
+                    //}
+                    //else
+                    //{
+                    //    newLine += ' ';
+                    //}
                 }
-                else if (Texture2D.GetPixel(x, y) == Color.white)
-                {
-                    newLine += '0';
-                }
-                else
-                {
-                    newLine += ' ';
-                }
+                //Debug.Log(newLine);
+                lines.Add(newLine);
             }
-            lines.Add(newLine);
+
         }
 
 
@@ -127,5 +151,23 @@ public class MapData : MonoBehaviour
             }
         }
         return map;
+    }
+
+    void SetupLookupTable()
+    {
+        terrainLookupTable.Add(openColor, NodeType.Open);
+        terrainLookupTable.Add(blockedColor, NodeType.Blocked);
+        terrainLookupTable.Add(lightTerrainColor, NodeType.LightTerrain);
+        terrainLookupTable.Add(mediumTerrainColor, NodeType.MediumTerrain);
+        terrainLookupTable.Add(heavyTerrainColor, NodeType.HeavyTerrain);
+    }
+    public static Color GetColorFromNodeType(NodeType nodeType)
+    {
+        if (terrainLookupTable.ContainsValue(nodeType))
+        {
+            Color colorKey = terrainLookupTable.FirstOrDefault(x=>x.Value==nodeType).Key;
+            return colorKey;
+        }
+        return Color.white;
     }
 }

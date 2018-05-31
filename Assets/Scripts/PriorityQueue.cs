@@ -77,7 +77,7 @@ public class PriorityQueue <T>  where T:IComparable<T> {
 
     void ShowTree(string info)
     {
-        int index = 0,start=0;
+        int index = 0;
       
         while (true)
         {
@@ -95,7 +95,6 @@ public class PriorityQueue <T>  where T:IComparable<T> {
                     str += data[i].ToString();
                 }
                 Debug.Log(str);
-                start = tl;
                 index++;
             }
             else {

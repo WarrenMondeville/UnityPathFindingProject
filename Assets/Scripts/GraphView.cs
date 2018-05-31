@@ -10,8 +10,8 @@ public class GraphView : MonoBehaviour
     public GameObject nodeViewPrefab;
     public NodeView[,] nodeViews;
 
-    public Color baseColor = Color.white;
-    public Color wallColor = Color.black;
+    //public Color baseColor = Color.white;
+    //public Color wallColor = Color.black;
 
     public void Init(Graph graph)
     {
@@ -32,14 +32,16 @@ public class GraphView : MonoBehaviour
             {
                 nodeView.Init(n);
                 nodeViews[n.xIndex, n.yIndex] = nodeView;
-                if (n.nodeType == NodeType.Blocked)
-                {
-                    nodeView.ColorNode(wallColor);
-                }
-                else
-                {
-                    nodeView.ColorNode(baseColor);
-                }
+                Color originalColor = MapData.GetColorFromNodeType(n.nodeType);
+                nodeView.ColorNode(originalColor);
+                //if (n.nodeType == NodeType.Blocked)
+                //{
+                //    nodeView.ColorNode(wallColor);
+                //}
+                //else
+                //{
+                //    nodeView.ColorNode(baseColor);
+                //}
 
             }
         }
@@ -58,6 +60,20 @@ public class GraphView : MonoBehaviour
         }
     }
 
+    public void ColorNodes(List<Node> nodes, Color color,float lerValue)
+    {
+        foreach (var n in nodes)
+        {
+            if (n != null)
+            {
+                NodeView nodeView = nodeViews[n.xIndex, n.yIndex];
+                Color newColor = color;
+                Color originalColor = MapData.GetColorFromNodeType(n.nodeType);
+                newColor = Color.Lerp(originalColor,newColor,lerValue);
+                nodeView.ColorNode(newColor);
+            }
+        }
+    }
     internal void ColorNodes(Queue<Node> nodes, Color color)
     {
         foreach (var n in nodes)

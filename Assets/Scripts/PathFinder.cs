@@ -38,7 +38,8 @@ public class PathFinder : MonoBehaviour
     {
         BreadthFirstSerch = 0,
         Dijkstra = 1,
-
+        GreedyBestFirst = 2,
+        AStart=3,
     }
     public Mode mode = Mode.BreadthFirstSerch;
     public void Init(Graph graph, GraphView graphView, Node start, Node goal)
@@ -99,7 +100,7 @@ public class PathFinder : MonoBehaviour
 
         if (m_exploreNodes != null)
         {
-            graphView.ColorNodes(m_exploreNodes, exploredColor);
+            graphView.ColorNodes(m_exploreNodes, exploredColor,0.5f);
         }
 
         if (m_pathNodes != null && m_pathNodes.Count > 0)
@@ -124,7 +125,7 @@ public class PathFinder : MonoBehaviour
 
     public IEnumerator SearchRoutine(float timeStep = 0.1f)
     {
-        float timeStart = Time.time;
+        float timeStart = Time.realtimeSinceStartup;
         yield return null;
 
         while (!isComplete)
@@ -145,6 +146,12 @@ public class PathFinder : MonoBehaviour
                     case Mode.Dijkstra:
                         ExpandFrontierDijkstra(currentNode);
                         break;
+                    case Mode.GreedyBestFirst:
+                        ExpandFrontierGreedyBestFirst(currentNode);
+                        break;
+                    case Mode.AStart:
+                        ExpandFrontierAStar(currentNode);
+                        break;
                     default:
                         break;
                 }
@@ -162,7 +169,7 @@ public class PathFinder : MonoBehaviour
                 }
                 if (showIterations)
                 {
-                    ShowDiagnost();
+                    ShowDiagnostic();
                     yield return new WaitForSeconds(timeStep);
                 }
 
@@ -172,11 +179,11 @@ public class PathFinder : MonoBehaviour
                 isComplete = true;
             }
         }
-        ShowDiagnost();
-        Debug.Log("PATHFINDER SerchRoutine: elapse time =" + (Time.time - timeStart).ToString() + " seconds");
+        ShowDiagnostic();
+        Debug.Log("PATHFINDER SerchRoutine: elapse time =" + (Time.realtimeSinceStartup - timeStart).ToString() + " seconds");
     }
 
-    private void ShowDiagnost()
+    private void ShowDiagnostic()
     {
         if (showColors)
         {
@@ -199,11 +206,12 @@ public class PathFinder : MonoBehaviour
                 if (!m_exploreNodes.Contains(node.neighbors[i]) && !m_frontierNodes.Contains(node.neighbors[i]))
                 {
                     float distanceToNeighbor = m_graph.GetNodeDistance(node, node.neighbors[i]);
-                    float newDistanceTraveled = distanceToNeighbor + node.distanceTraveled;
+                    float newDistanceTraveled = distanceToNeighbor + node.distanceTraveled
+                        +(int)node.nodeType;
                     node.neighbors[i].distanceTraveled = newDistanceTraveled;
 
                     node.neighbors[i].previous = node;
-                     node.neighbors[i].priority = (int)node.neighbors[i].distanceTraveled;
+                     node.neighbors[i].priority = node.neighbors[i].distanceTraveled;
                     //node.neighbors[i].priority = m_exploreNodes.Count;
                     m_frontierNodes.Enqueue(node.neighbors[i]);
                 }
@@ -220,8 +228,8 @@ public class PathFinder : MonoBehaviour
                 if (!m_exploreNodes.Contains(node.neighbors[i]))
                 {
                     float distanceToNeighbor = m_graph.GetNodeDistance(node, node.neighbors[i]);
-                    float newDistanceTraveled = distanceToNeighbor + node.distanceTraveled;
-
+                    float newDistanceTraveled = distanceToNeighbor + node.distanceTraveled
+                    +(int)node.nodeType;
                     if (float.IsPositiveInfinity(node.neighbors[i].distanceTraveled)
                         || newDistanceTraveled < node.neighbors[i].distanceTraveled)
                     {
@@ -238,6 +246,59 @@ public class PathFinder : MonoBehaviour
         }
     }
 
+    void ExpandFrontierGreedyBestFirst(Node node)
+    {
+        if (node != null)
+        {
+            for (int i = 0; i < node.neighbors.Count; i++)
+            {
+                if (!m_exploreNodes.Contains(node.neighbors[i]) && !m_frontierNodes.Contains(node.neighbors[i]))
+                {
+                    float distanceToNeighbor = m_graph.GetNodeDistance(node, node.neighbors[i]);
+                    float newDistanceTraveled = distanceToNeighbor + node.distanceTraveled
+                        + (int)node.nodeType;
+                    node.neighbors[i].distanceTraveled = newDistanceTraveled;
+                    if (m_graph!=null)
+                    {
+                        node.neighbors[i].priority = m_graph.GetNodeDistance(node.neighbors[i],m_goalNode);
+                    }
+                     node.neighbors[i].previous = node;
+                    //node.neighbors[i].priority = (int)node.neighbors[i].distanceTraveled;
+                    //node.neighbors[i].priority = m_exploreNodes.Count;
+                    m_frontierNodes.Enqueue(node.neighbors[i]);
+                }
+            }
+        }
+    }
+
+    void ExpandFrontierAStar (Node node)
+    {
+        if (node != null)
+        {
+            for (int i = 0; i < node.neighbors.Count; i++)
+            {
+                if (!m_exploreNodes.Contains(node.neighbors[i]) && !m_frontierNodes.Contains(node.neighbors[i]))
+                {
+                    float distanceToNeighbor = m_graph.GetNodeDistance(node, node.neighbors[i]);
+                    float newDistanceTraveled = distanceToNeighbor + node.distanceTraveled
+                        + (int)node.nodeType;
+                    if (float.IsPositiveInfinity(node.neighbors[i].distanceTraveled)
+                     || newDistanceTraveled < node.neighbors[i].distanceTraveled)
+                    {
+                        node.neighbors[i].previous = node;
+                        node.neighbors[i].distanceTraveled = newDistanceTraveled;
+                    }
+                    if (!m_frontierNodes.Contains(node.neighbors[i])&& m_graph!=null)
+                    {
+                        //f(n)=g(n)+h(n)
+                        int distanceToGoal =(int) m_graph.GetNodeDistance(node.neighbors[i],m_goalNode);
+                        node.neighbors[i].priority = node.neighbors[i].distanceTraveled+distanceToGoal;
+                        m_frontierNodes.Enqueue(node.neighbors[i]);
+                    }
+                }
+            }
+        }
+    }
 
     List<Node> GetPathNodes(Node endNode)
     {
