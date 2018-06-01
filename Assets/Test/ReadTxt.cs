@@ -16,7 +16,7 @@ public class ReadTxt : MonoBehaviour {
         if (fInfo0.Exists)
         {
             StreamReader r = new StreamReader(fileAddress);
-            string s = r.ReadToEnd();
+            //string s = r.ReadToEnd();
             //Debug.Log(s);
             while (true)
             {
